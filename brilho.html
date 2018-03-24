@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ajuste de brilho</title>
+<style>
+</style>
+</head>
+<body>
+<canvas id="canvas" width="500" height="500" style="border: 1px solid">
+</canvas>
+<script>
+  var img = new Image();
+  img.src = 'img.jpg';
+  var canvas = document.getElementById('canvas'); 
+  var ctx = canvas.getContext('2d'); 
+
+  var brilho = 40; // valor do brilho
+
+  img.onload = function() { 
+    ctx.drawImage(img, 0, 0,500,500); 
+    var copy=ctx.getImageData(0,0,canvas.width,canvas.height); 
+    var imgData=copy.data; 
+
+  
+
+    for (var i = 0; i < imgData.length; i+=4){ 
+      var r = imgData[i]; 
+      var g = imgData[i+1]; 
+      var b = imgData[i+2]; 
+
+
+      //aplica o valor do brilho igualmente nos três canais
+      //sempre garantindo que os canais continuem dentro do permitido (entre 0 e 255)
+      r = Math.min(Math.max(parseInt(r + brilho), 0), 255); 
+      g = Math.min(Math.max(parseInt(g + brilho), 0), 255);
+      b = Math.min(Math.max(parseInt(b + brilho), 0), 255);
+    
+
+      imgData[i] = r;
+      imgData[i+1] = g;
+      imgData[i+2] = b;
+
+    }
+    ctx.putImageData(copy, 0,0);
+  }
+
+</script>
+</body>
+</html>

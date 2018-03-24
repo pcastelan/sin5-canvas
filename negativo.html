@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Negativo</title>
+<style>
+</style>
+</head>
+<body>
+<canvas id="canvas" width="500" height="500" style="border: 1px solid">
+</canvas>
+<script>
+  var img = new Image();
+  img.src = 'img.jpg';
+  var canvas = document.getElementById('canvas'); 
+
+  var ctx = canvas.getContext('2d'); 
+  img.onload = function() {
+    ctx.drawImage(img, 0, 0,500,500); 
+    var copy=ctx.getImageData(0,0,canvas.width,canvas.height); 
+    var imgData=copy.data; 
+    for (var i = 0; i < imgData.length; i+=4){ 
+      var r = imgData[i]; 
+      var g = imgData[i+1]; 
+      var b = imgData[i+2]; 
+
+      //subtrai cada canal do total para achar os seus opostos
+      imgData[i] = 255-imgData[i];  
+      imgData[i+1] = 255-imgData[i+1]; 
+      imgData[i+2] = 255-imgData[i+2]; 
+    }
+    ctx.putImageData(copy, 0,0);
+  }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ajuste de contraste</title>
+<style>
+</style>
+</head>
+<body>
+<canvas id="canvas" width="500" height="500" style="border: 1px solid">
+</canvas>
+<script>
+  var img = new Image();
+  img.src = 'img.jpg';
+  var canvas = document.getElementById('canvas'); 
+  var ctx = canvas.getContext('2d'); 
+  var correcao = 88; // valor da correcao
+
+  img.onload = function() { 
+    ctx.drawImage(img, 0, 0,500,500); 
+    var copy=ctx.getImageData(0,0,canvas.width,canvas.height); 
+    var imgData=copy.data; 
+
+    var fator = (255*(correcao+255))/(255*(255-correcao));  //calculo do fator
+
+    for (var i = 0; i < imgData.length; i+=4){ 
+      var r = imgData[i]; 
+      var g = imgData[i+1]; 
+      var b = imgData[i+2]; 
+
+
+      //aplica o fator nos canais
+      r = fator*(r-128)+128; 
+      g = fator*(g-128)+128;
+      b = fator*(b-128)+128;    
+
+      imgData[i] = r;
+      imgData[i+1] = g;
+      imgData[i+2] = b;
+
+    }
+    ctx.putImageData(copy, 0,0);
+  }
+
+</script>
+</body>
+</html>
