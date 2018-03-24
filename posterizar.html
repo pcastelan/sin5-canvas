@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Posterizar</title>
+<style>
+</style>
+</head>
+<body>
+<canvas id="canvas" width="500" height="500" style="border: 1px solid">
+</canvas>
+<script>
+var img = new Image();
+img.src = 'img.jpg';
+var canvas = document.getElementById('canvas'); 
+var ctx = canvas.getContext('2d'); 
+
+
+
+
+function posteriza(canal){
+  var limiteTamanho = 5; // numero de intervalos
+  var limite = 255/limiteTamanho; //define o limite do intevalo inicial
+
+  var j = 0; // contador
+
+  //enquanto o contador for menor que o numero de intervalos
+  while(j < limiteTamanho){
+
+    // se o canal for menor ou igual ao limite do intervalo atual
+    if (canal <= limite){
+      canal = limite; // canal recebe o limite
+      return(canal); // finaliza funcao retornando o novo valor do canal
+    }
+
+    j++; // incrementa o contador
+    limite = limite*j; // muda o limite do intervalo
+  }
+  return(255); // se sair do laço sem retornar retorna o máximo;
+}
+
+img.onload = function() {
+  ctx.drawImage(img, 0, 0,500,500); 
+  var copy=ctx.getImageData(0,0,canvas.width,canvas.height); 
+  var imgData=copy.data; 
+  for (var i = 0; i < imgData.length; i+=4){ 
+    r = imgData[i];
+    g = imgData[i+1];
+    b = imgData[i+2];
+    
+    //calcula os novos valores dos canais chamando a função posteriza
+    imgData[i] = Math.round(posteriza(r)); 
+    imgData[i+1] = Math.round(posteriza(g));
+    imgData[i+2] = Math.round(posteriza(b));
+    
+  }
+  ctx.putImageData(copy, 0,0);
+}
+
+</script>
+</body>
+</html>
