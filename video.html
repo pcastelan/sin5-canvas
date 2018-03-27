@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="UTF-8">
+	<title>Exercicio video</title>
+	<style>
+		#controles, #video{
+			width: 500px;
+			padding: 0;
+			margin: 0;
+			background: #eee;
+		}
+		
+		#controles a{
+			padding: 5px;
+			text-decoration: none;
+			color: #333;
+			text-transform: uppercase;
+			font-family: Tahoma, sans-serif;
+			font-size: 12px;
+			font-weight: bold;
+			margin: 0;
+			display: inline-block;
+			width: 63px;
+			border: none;
+			box-sizing: border-box;
+			text-align: center;
+		}
+			#controles a:hover{
+				color: #eee;
+				background: #333;
+			}
+
+		#container{
+			width: 500px;
+			border: 2px solid #333;
+		}
+		.progressoContainer{
+			display: block;
+			width: 500px;			
+			margin-top:-7px;
+		}
+		#slider{
+			display: inline-block;
+			width: 436px;			
+			border:none;
+			background: #ccc;
+		}
+		#slider::-moz-progress-bar{ background:#333; }
+		#slider::-webkit-progress-value { background:#333; }
+
+		.tempo{
+			padding-left: 5px;
+			box-sizing:border-box;
+			width: 60px;
+			color: #333;
+			font-size: 11px;
+			display: inline-block;
+			text-transform: uppercase;
+			font-family: 'Tahoma', sans-serif;
+			font-weight: bold;
+		}
+		.botoes{
+			margin-left: 18px;
+		}
+	</style>
+</head>
+<body>
+	<div id="container">
+		<video id="video">
+			<source src="teste.webm" type="video/webm">
+			<source src="teste.mp4" type="video/mp4">
+		</video>
+
+		<div id="controles">
+			<div class="progressoContainer">
+				<span class="tempo">00:00</span>
+				<progress id="slider" min='0' max='100' value='0'>00:00</progress>
+			</div>
+
+			
+			<div class="botoes">
+				<a class="play" href="#">play</a>
+				<a href="#" class="pausar">pausar</a>
+				<a class="inicio" href="#">inicio</a>
+				<a class="stop" href="#">stop</a>
+				<a class="pular" href="#">pular</a> <!-- pula 10 segundos -->
+				<a href="#" class="fim">fim</a>
+				<a href="#" class="mute">mute</a>
+			</div>
+			
+		</div>
+	</div>
+
+	<script>
+		var video = document.querySelector('#video');
+
+		//variaveis com as referencias dos elementos
+		var controlePular = document.querySelector('.pular'); 
+		var controleInicio = document.querySelector('.inicio');
+		var controlePlay = document.querySelector('.play');
+		var controlePausar = document.querySelector('.pausar');
+		var controleStop = document.querySelector('.stop');
+		var controleFim = document.querySelector('.fim');
+		var controleMute = document.querySelector('.mute');
+		var slider = document.querySelector('#slider');
+		var volumeAtual = video.volume;
+		var indicadorTempo = document.querySelector('.tempo');
+
+		//transforma os segundos em horas e minutos
+		function converteTempo (tempoS){
+			var hora =0, min=0, seg=0;
+			var tempoTexto = '';
+			while (tempoS > 0){
+
+				if(tempoS >= 3600){
+					hora = Math.floor(tempoS / 3600);
+					tempoS = tempoS - (hora*3600);
+				} else if(tempoS >=60){
+					min = Math.floor(tempoS / 60);					
+					tempoS = tempoS - (min*60); 
+				} else if (tempoS < 60) {
+					seg = Math.floor(tempoS);
+					tempoS = 0;
+				}
+
+			}
+			//retorna uma string com h:m:s
+			return (hora + ':' + min +':' + seg);
+			
+		}
+
+		//quando o usuario clica em inicio
+		controleInicio.onclick = function(){		
+			video.currentTime = 0; //seta o tempo atual de volta pra 0 segundos
+			video.play(); //toca o vídeo
+			
+		}
+
+		controlePular.onclick = function(){
+			video.currentTime += 10; //pula 10 segundos
+			video.play(); // toca o video
+		}
+
+		controlePausar.onclick = function(){
+			video.pause(); //pausa o video
+		}
+
+		controlePlay.onclick = function(){
+			video.play(); //toca o video
+		}
+
+		controleStop.onclick = function(){
+			video.currentTime = 0; //seta o tempo atual de volta pra 0 segundos
+			video.pause();
+		}
+
+		controleFim.onclick = function(){
+			if(video.duration > 0 && video.currentTime < video.duration){ // se o video existir e nao ja estiver no final
+				video.currentTime = video.duration; //seta o tempo atual de volta a duracao total
+			}
+		}
+
+		controleMute.onclick = function(){
+
+			if(video.volume> 0.0){ // se o video nao já estiver no mute
+				volumeAtual = video.volume;
+				video.volume = 0.0; //torna o video mudo
+			} else { // se o video estiver mudo
+				video.volume = volumeAtual; // restaura o volume
+			}
+		}
+
+		video.onclick = function(){ // o video é pausado ou tocado quando clicamos nele
+			if(video.paused){
+				video.play();
+			} else {
+				video.pause();
+			}
+		}
+
+		//atualiza a barra de progresso
+		function atualizaProgresso(){
+			var porcentagem = Math.floor((100 / video.duration) * video.currentTime); //calcula quantos % ja se passaram
+			slider.value = porcentagem; // seta o slider com a porcentagem
+			slider.innerHTML = porcentagem + '%';
+			indicadorTempo.innerHTML = converteTempo(video.currentTime); // mostra no indicador quanto tempo se passou;
+		}
+
+		// sempre que o tempo atualiza tb é atualizada a barra de progresso
+		video.addEventListener('timeupdate', atualizaProgresso, false); 
+
+	</script>
+</body>
+</html>
